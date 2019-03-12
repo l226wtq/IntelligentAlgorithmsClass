@@ -6,6 +6,7 @@
 @file: hi.py
 @time: 2019/3/11 14:21
 '''
+import copy
 import random
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,9 +31,28 @@ class city:
         self.y_localtion = y_l
 
 
-class Distance():
-    def __init__(self, x1, y1, x2, y2):
-        self.distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** (1 / 2)
+class solution():
+    def __init__(self, tempList):
+        self.solveList = tempList
+        self.step = 1
+        self.distance = self.calDistance(tempList)
+
+    def calDistance(self, tempList):
+        self.tempDistance = 0
+        for i, j in zip(tempList, range(cityNum)):
+            x = eval('city{}.x_localtion'.format(i))
+            y = eval('city{}.y_localtion'.format(i))
+            if j == 0:
+                x0 = copy.deepcopy(x)
+                y0 = copy.deepcopy(y)
+            else:
+                x2 = eval('city{}.x_localtion'.format(tempList[j - 1]))
+                y2 = eval('city{}.y_localtion'.format(tempList[j - 1]))
+                self.tempDistance += ((x - x2) ** 2 + (y - y2) ** 2) ** (1 / 2)
+                if (j == cityNum - 1):
+                    self.tempDistance += ((x - x0) ** 2 + (y - y0) ** 2) ** (1 / 2)
+        # print(self.tempDistance) # debug
+        return self.tempDistance
 
 
 for i in range(cityNum):
@@ -45,11 +65,23 @@ for x, y, i in zip(city_randomX, city_randomY, range(cityNum)):
 for i in range(cityNum):
     x = eval('city{}.x_localtion'.format(i))
     y = eval('city{}.y_localtion'.format(i))
-    plt.plot(x, y, 'ro')
+    plt.scatter(x, y, c='b')
+    if i == 0:
+        x0 = copy.deepcopy(x)
+        y0 = copy.deepcopy(y)
+    else:
+        x2 = eval('city{}.x_localtion'.format(i - 1))
+        y2 = eval('city{}.y_localtion'.format(i - 1))
+        plt.plot([x, x2], [y, y2], c='r')
+        if i == cityNum - 1:
+            plt.plot([x, x0], [y, y0], c='r')  # 忽略编译器错误
 plt.show()
-init_list = np.arange(cityNum)
 
-print(init_list)
+init_list = np.arange(cityNum)
+np.random.shuffle(init_list)
+Solution = solution(init_list)
+print(Solution.solveList, '\n', Solution.distance)
+
 for i in range(10):
     np.random.shuffle(init_list)  # 随机排列
     print(init_list)
