@@ -20,7 +20,7 @@ print('hi')
 city_randomX = []
 city_randomY = []
 cityNum = int(input('enter the num of city:'))
-swapNum = 5
+swapNum = 3
 betterSoFar = 100
 Tabu_list = [[]]
 Tabu_limitLength = 50
@@ -55,22 +55,25 @@ class solution():
                     self.tempDistance += ((x - x0) ** 2 + (y - y0) ** 2) ** (1 / 2)
         # print(self.tempDistance) # debug
         return self.tempDistance
-    def drawPlot(self):
-        for i in range(cityNum):
+
+    def drawPlot(self, tempList):
+        x0, y0 = 0, 0
+        for i, j in zip(tempList, range(cityNum)):
             x = eval('city{}.x_localtion'.format(i))
             y = eval('city{}.y_localtion'.format(i))
             plt.scatter(x, y, c='b')
-            if i == 0:
-                x0 = copy.deepcopy(x)
-                y0 = copy.deepcopy(y)
+            if j == 0:
+                x0 = x
+                y0 = y
             else:
-                x2 = eval('city{}.x_localtion'.format(i - 1))
-                y2 = eval('city{}.y_localtion'.format(i - 1))
+                x2 = eval('city{}.x_localtion'.format(tempList[j-1]))
+                y2 = eval('city{}.y_localtion'.format(tempList[j-1]))
                 plt.plot([x, x2], [y, y2], c='r')
-                if i == cityNum - 1:
-                    plt.plot([x, x0], [y, y0], c='r')  # 忽略编译器错误
+                if j == cityNum - 1:
+                    plt.plot([x, x0], [y, y0], c='r')
+        plt.title('distance:{}'.format(self.distance))
         plt.show()
-        plt.pause(2)
+        plt.pause(1)
         plt.close()
 
 
@@ -80,6 +83,7 @@ for i in range(cityNum):
     city_randomY.append(random.randint(0, 200))
 for x, y, i in zip(city_randomX, city_randomY, range(cityNum)):
     exec('city{}=city(x, y)'.format(i))
+    print(i, ':', end='')
     exec('print(city{}.x_localtion , city{}.y_localtion)'.format(i, i))
 # 绘图
 
@@ -87,7 +91,7 @@ for x, y, i in zip(city_randomX, city_randomY, range(cityNum)):
 init_list = np.arange(cityNum)
 np.random.shuffle(init_list)
 Solution = solution(init_list)
-Solution.drawPlot()
+Solution.drawPlot(init_list)
 print(Solution.solveList, '\n', Solution.distance)
 
 randomList = []
@@ -98,12 +102,13 @@ while len(randomList) < (swapNum * 2):
 print(randomList)
 
 # exchange 调换的是排列
-exI = 0
+exI = 1
 while exI < len(randomList):
-    Solution.solveList[randomList[exI]], Solution.solveList[randomList[exI + 1]] = Solution.solveList[
-                                                                                       randomList[exI + 1]], \
+    Solution.solveList[randomList[exI]], Solution.solveList[randomList[exI - 1]] = Solution.solveList[
+                                                                                       randomList[exI - 1]], \
                                                                                    Solution.solveList[randomList[exI]]
     Solution.distance = Solution.calDistance(Solution.solveList)
+    Solution.drawPlot(Solution.solveList)
     print('exchange:', Solution.solveList, 'Distance:', Solution.distance)
     exI += 2
 # for i in range(10):
