@@ -20,7 +20,7 @@ print('hi')
 city_randomX = []
 city_randomY = []
 cityNum = int(input('enter the num of city:'))
-Tabu_list = []
+Tabu_list = [[]]
 Tabu_limitLength = 50
 
 
@@ -75,16 +75,28 @@ for i in range(cityNum):
         plt.plot([x, x2], [y, y2], c='r')
         if i == cityNum - 1:
             plt.plot([x, x0], [y, y0], c='r')  # 忽略编译器错误
-plt.show()
+# plt.show()
 
 init_list = np.arange(cityNum)
 np.random.shuffle(init_list)
 Solution = solution(init_list)
 print(Solution.solveList, '\n', Solution.distance)
 
-for i in range(10):
-    np.random.shuffle(init_list)  # 随机排列
-    print(init_list)
+randomList = []
+while (len(randomList) < 6):
+    x = random.randint(0, cityNum)
+    if x not in randomList:
+        randomList.append(x)
+print(randomList)
+
+# exchange 调换的是排列
+temp = copy.deepcopy(Solution.solveList[randomList[0]])
+Solution.solveList[randomList[1]] = Solution.solveList[randomList[0]]
+Solution.solveList[randomList[0]] = temp
+print('exchange:',Solution.solveList)
+# for i in range(10):
+#     np.random.shuffle(init_list)  # 随机排列
+#     print(init_list)
 
 # city1 = city(10, 32)
 # city2 = city(235, 12)
