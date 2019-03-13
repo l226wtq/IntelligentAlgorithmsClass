@@ -20,6 +20,8 @@ print('hi')
 city_randomX = []
 city_randomY = []
 cityNum = int(input('enter the num of city:'))
+swapNum = 5
+betterSoFar = 100
 Tabu_list = [[]]
 Tabu_limitLength = 50
 
@@ -53,47 +55,57 @@ class solution():
                     self.tempDistance += ((x - x0) ** 2 + (y - y0) ** 2) ** (1 / 2)
         # print(self.tempDistance) # debug
         return self.tempDistance
+    def drawPlot(self):
+        for i in range(cityNum):
+            x = eval('city{}.x_localtion'.format(i))
+            y = eval('city{}.y_localtion'.format(i))
+            plt.scatter(x, y, c='b')
+            if i == 0:
+                x0 = copy.deepcopy(x)
+                y0 = copy.deepcopy(y)
+            else:
+                x2 = eval('city{}.x_localtion'.format(i - 1))
+                y2 = eval('city{}.y_localtion'.format(i - 1))
+                plt.plot([x, x2], [y, y2], c='r')
+                if i == cityNum - 1:
+                    plt.plot([x, x0], [y, y0], c='r')  # 忽略编译器错误
+        plt.show()
+        plt.pause(2)
+        plt.close()
 
 
+# 生成随机坐标
 for i in range(cityNum):
     city_randomX.append(random.randint(0, 200))
     city_randomY.append(random.randint(0, 200))
 for x, y, i in zip(city_randomX, city_randomY, range(cityNum)):
     exec('city{}=city(x, y)'.format(i))
     exec('print(city{}.x_localtion , city{}.y_localtion)'.format(i, i))
+# 绘图
 
-for i in range(cityNum):
-    x = eval('city{}.x_localtion'.format(i))
-    y = eval('city{}.y_localtion'.format(i))
-    plt.scatter(x, y, c='b')
-    if i == 0:
-        x0 = copy.deepcopy(x)
-        y0 = copy.deepcopy(y)
-    else:
-        x2 = eval('city{}.x_localtion'.format(i - 1))
-        y2 = eval('city{}.y_localtion'.format(i - 1))
-        plt.plot([x, x2], [y, y2], c='r')
-        if i == cityNum - 1:
-            plt.plot([x, x0], [y, y0], c='r')  # 忽略编译器错误
-# plt.show()
 
 init_list = np.arange(cityNum)
 np.random.shuffle(init_list)
 Solution = solution(init_list)
+Solution.drawPlot()
 print(Solution.solveList, '\n', Solution.distance)
 
 randomList = []
-while (len(randomList) < 6):
+while len(randomList) < (swapNum * 2):
     x = random.randint(0, cityNum)
     if x not in randomList:
         randomList.append(x)
 print(randomList)
 
 # exchange 调换的是排列
-temp = copy.deepcopy(Solution.solveList[randomList[0]])
-Solution.solveList[randomList[1]] = Solution.solveList[randomList[0]]
-Solution.solveList[randomList[0]] = temp
-print('exchange:',Solution.solveList)
+exI = 0
+while exI < len(randomList):
+    Solution.solveList[randomList[exI]], Solution.solveList[randomList[exI + 1]] = Solution.solveList[
+                                                                                       randomList[exI + 1]], \
+                                                                                   Solution.solveList[randomList[exI]]
+    Solution.distance = Solution.calDistance(Solution.solveList)
+    print('exchange:', Solution.solveList, 'Distance:', Solution.distance)
+    exI += 2
 # for i in range(10):
 #     np.random.shuffle(init_list)  # 随机排列
 #     print(init_list)
