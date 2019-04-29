@@ -28,8 +28,8 @@ cityNum = 30
 swapNum = 14
 betterSoFar = 80
 Current_tabu = 0
-Tabu_linitStep = 50
-Tabu_limitLength = 500
+Tabu_linitStep = 10
+Tabu_limitLength = 3000
 
 
 class city:
@@ -105,14 +105,14 @@ class solution():
 #     city_randomY.append(random.randint(0, 200))
 for x, y, i in zip(city_x, city_y, range(cityNum)):
     exec('city{}=city(x, y)'.format(i))
-    exec('print(city{}.x_localtion , city{}.y_localtion)'.format(i, i))
+    # exec('print(city{}.x_localtion , city{}.y_localtion)'.format(i, i))
 
 init_list = np.arange(cityNum)
 Tabu_limitList = np.zeros([cityNum, cityNum])
 np.random.shuffle(init_list)
 Solution = solution(init_list)
 Solution.drawPlot()
-print(Solution.solveList, '\n', Solution.distance)
+# print(Solution.solveList, '\n', Solution.distance)
 
 for i in range(Tabu_limitLength):
     for j in range(cityNum):  # 禁忌计数减一
@@ -124,7 +124,7 @@ for i in range(Tabu_limitLength):
         x = random.randint(0, cityNum - 1)  # 不能生成等于cityNum的数，会越界
         if x not in randomList:
             randomList.append(x)
-    print('randomList:', randomList)
+    # print('randomList:', randomList)
 
     # exchange 调换的是排列
     exI = 0
@@ -141,11 +141,11 @@ for i in range(Tabu_limitLength):
             randomList[exI]]
         swapListTemp.append(swapList)
         swapDisList.append(Solution.distance - Solution.calDistance(swapList))  # 差值越大越好
-        print('exchange:', swapList, 'Distance:', swapDisList, swapListTemp)
+        # print('exchange:', swapList, 'Distance:', swapDisList, swapListTemp)
         exI += 2
 
     swapMax = max(swapDisList)
-    if swapMax < -(betterSoFar / 16):
+    if swapMax < 0:
         continue
     maxIndex = swapDisList.index(swapMax)
     # print(swapDisList.index(swapMax))
@@ -156,7 +156,7 @@ for i in range(Tabu_limitLength):
         Tabu_limitList[randomList[maxIndex * 2 + 1]][randomList[maxIndex * 2]] = Tabu_linitStep  # 禁忌置数
         # Solution.drawPlot()
 
-        print(Tabu_limitList)
+        # print(Tabu_limitList)
     else:
         if swapMax > betterSoFar:
             Solution.solveList = swapListTemp[maxIndex]
@@ -164,9 +164,10 @@ for i in range(Tabu_limitLength):
             Tabu_limitList[randomList[maxIndex * 2]][randomList[maxIndex * 2 + 1]] = Tabu_linitStep
             Tabu_limitList[randomList[maxIndex * 2 + 1]][randomList[maxIndex * 2]] = Tabu_linitStep  # 禁忌置数
             Solution.drawPlot()
-            print(Tabu_limitList)
+            # print(Tabu_limitList)
         else:
-            print('In Tabu,banned!')
+            # print('In Tabu,banned!')
+            continue
 endTime = time.time()
 print('time', endTime - startTime)
 Solution.drawPlotOutput()
